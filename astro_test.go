@@ -16,11 +16,13 @@ func ExampleAeiHv() {
 	p := &coord.Cart{1, 0, 0}
 	v := &coord.Cart{0, 1, 0}
 	f := func() {
-		a, e, i, hpv := astro.AeiHv(p, v, math.Sqrt(p.Square()))
+		var hv coord.Cart
+		a, e, i, ok := astro.AeiHv(p, v, math.Sqrt(p.Square()), &hv)
 		fmt.Printf("a: %.5f AU\n", a)
 		fmt.Printf("e: %.5f\n", e)
 		fmt.Printf("i: %.5f deg\n", i)
-		fmt.Printf("hpv: {X:%.2f Y:%.2f Z:%.2f}\n", hpv.X, hpv.Y, hpv.Z)
+		fmt.Printf("hv: {X:%.2f Y:%.2f Z:%.2f}\n", hv.X, hv.Y, hv.Z)
+		fmt.Println("ok:", ok)
 	}
 	f()
 
@@ -33,13 +35,15 @@ func ExampleAeiHv() {
 	// a: 1.00000 AU
 	// e: 0.00000
 	// i: 0.00000 deg
-	// hpv: {X:0.00 Y:0.00 Z:1.00}
+	// hv: {X:0.00 Y:0.00 Z:1.00}
+	// ok: true
 	//
 	// Example 2
 	// a: 2.27974 AU
 	// e: 0.06536
 	// i: 5.38598 deg
-	// hpv: {X:-0.10 Y:-0.10 Z:1.50}
+	// hv: {X:-0.10 Y:-0.10 Z:1.50}
+	// ok: true
 }
 
 func ExampleHMag() {

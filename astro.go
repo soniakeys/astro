@@ -20,17 +20,26 @@ const (
 // Actually stretching the package claim of "generally useful," this
 // function has parameters and return values most efficient for Digest2.
 //
+// The algorithm becomes unstable for near-parabolic orbits or orbits with
+// large semimajor axes.  The function returns ok=false if a would be > 100 AU
+// or if e would be > .99.
+//
 // Args:
 //   p = position: sun object vector, in AU
 //   v = object velocity vector, scaled by gravitational constant
 //   d = sun-object distance pre computed from p
+//   hv: a result argument, must be a non-nil pointer, used to return
+//       the momentum vector.
 //
-// Returns keplarian a, e, and i, plus the momentum vector.
+// Returns keplarian a, e, and i, the momentum vector (through an argument),
+// and ok=true for valid results.
+//
 // Keplarian a returned in AU, i returned in degrees.
-func AeiHv(p, v *coord.Cart, d float64) (a, e, i float64, hvp *coord.Cart) {
+//
+// ok=false means other return values are invalid
+func AeiHv(p, v *coord.Cart, d float64, hv *coord.Cart) (a, e, i float64, ok bool) {
 
 	// momentum vector
-	var hv coord.Cart
 	hv.Cross(p, v)
 	hsq := hv.Square()
 	hm := math.Sqrt(hsq)
@@ -42,7 +51,7 @@ func AeiHv(p, v *coord.Cart, d float64) (a, e, i float64, hvp *coord.Cart) {
 
 	// for stability, require a < 100
 	if d > temp*100 {
-		return
+		return // with ok=false
 	}
 	a = d / temp
 	inva := temp / d
@@ -53,7 +62,7 @@ func AeiHv(p, v *coord.Cart, d float64) (a, e, i float64, hvp *coord.Cart) {
 
 	// stability test:  require e < .99
 	if e > .99 {
-		return
+		return // with ok=false
 	}
 
 	// solve for inclination.
@@ -65,7 +74,7 @@ func AeiHv(p, v *coord.Cart, d float64) (a, e, i float64, hvp *coord.Cart) {
 	if !iZero {
 		i = math.Acos(hv.Z/hm) * 180 / math.Pi
 	}
-	return a, e, i, &hv
+	return a, e, i, true
 }
 
 // HMag computes H from V magnitude.
