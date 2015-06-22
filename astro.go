@@ -10,7 +10,9 @@ import (
 )
 
 const (
-	K    = .01720209895
+	C    = 299792458    // Speed of light, m/s
+	AU   = 149597870691 // 1 AU in meters
+	K    = .01720209895 // Gaussian gravitational constant
 	InvK = 1 / K
 	U    = K * K
 )
