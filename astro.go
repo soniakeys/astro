@@ -17,6 +17,24 @@ const (
 	U    = K * K
 )
 
+// SOblJ2000, COblJ2000 are sine and cosine of obliquity at J2000.
+const (
+	SOblJ2000 = .397777156
+	COblJ2000 = .917482062
+)
+
+const (
+	J2000         = 2451545.0 // Julian date corresponding to January 1.5, year 2000.
+	JulianCentury = 36525     // days
+)
+
+// J2000Century returns the number of Julian centuries since J2000.
+//
+// The quantity appears as T in a number of time series.
+func J2000Century(jde float64) float64 {
+	return (jde - J2000) / JulianCentury
+}
+
 // AeiHv, solves Keplerian elements from state vectors.
 //
 // Actually stretching the package claim of "generally useful," this
@@ -158,6 +176,18 @@ func Se2000(mjd float64) (sunEarth coord.Cart, soe, coe float64) {
 	return
 }
 
+// Horner evaluates a polynomal with coefficients c at x.  The constant
+// term is c[0].  The function panics with an empty coefficient list.
+func Horner(x float64, c ...float64) float64 {
+	i := len(c) - 1
+	y := c[i]
+	for i > 0 {
+		i--
+		y = y*x + c[i] // sorry, no fused multiply-add in Go
+	}
+	return y
+}
+
 // PMod returns a positive floating-point x mod y.
 //
 // For a positive argument y, it returns a value in the range [0,y).
@@ -169,4 +199,28 @@ func PMod(x, y float64) float64 {
 		r += y
 	}
 	return r
+}
+
+// FloorDiv returns the integer floor of the fractional value (x / y).
+//
+// It uses integer math only, so is more efficient than using floating point
+// intermediate values.  This function can be used in many places where INT()
+// appears in AA.  As with built in integer division, it panics with y == 0.
+func floorDiv(x, y int) int {
+	if (x < 0) == (y < 0) {
+		return x / y
+	}
+	return x/y - 1
+}
+
+// FloorDiv64 returns the integer floor of the fractional value (x / y).
+//
+// It uses integer math only, so is more efficient than using floating point
+// intermediate values.  This function can be used in many places where INT()
+// appears in AA.  As with built in integer division, it panics with y == 0.
+func floorDiv64(x, y int64) int64 {
+	if (x < 0) == (y < 0) {
+		return x / y
+	}
+	return x/y - 1
 }
