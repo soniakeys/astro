@@ -17,7 +17,7 @@ const (
 	U    = K * K
 )
 
-// AeiHv, solves Keplarian elements from state vectors.
+// AeiHv, solves Keplerian elements from state vectors.
 //
 // Actually stretching the package claim of "generally useful," this
 // function has parameters and return values most efficient for Digest2.
@@ -33,10 +33,10 @@ const (
 //   hv: a result argument, must be a non-nil pointer, used to return
 //       the momentum vector.
 //
-// Returns keplarian a, e, and i, the momentum vector (through an argument),
+// Returns keplerian a, e, and i, the momentum vector (through an argument),
 // and ok=true for valid results.
 //
-// Keplarian a returned in AU, i returned in degrees.
+// Keplerian a returned in AU, i returned in degrees.
 //
 // ok=false means other return values are invalid
 func AeiHv(p, v *coord.Cart, d float64, hv *coord.Cart) (a, e, i float64, ok bool) {
