@@ -25,6 +25,7 @@ const (
 
 const (
 	J2000         = 2451545.0 // Julian date corresponding to January 1.5, year 2000.
+	JMod          = 2400000.5 // Julian date of the modified Julian date epoch.
 	JulianCentury = 36525     // days
 )
 
