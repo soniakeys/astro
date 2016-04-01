@@ -72,7 +72,7 @@ func kepler(e, M float64) float64 {
 // The iterated formula is the same as in Kepler2 but a (different) limiting
 // function avoids divergence.
 //
-// Argument e is eccentricity, M is mean anomoly in radians,
+// Argument e is eccentricity, M is mean anomaly in radians,
 // places is the desired number of decimal places in the result.
 //
 // Result E is eccentric anomaly in radians.
@@ -93,7 +93,7 @@ func kepler2b(e, M float64, places int) (E float64, err error) {
 
 // Kepler3 solves Kepler's equation by binary search.
 //
-// Argument e is eccentricity, M is mean anomoly in radians.
+// Argument e is eccentricity, M is mean anomaly in radians.
 //
 // Result E is eccentric anomaly in radians.
 func kepler3(e, M float64) (E float64) {
