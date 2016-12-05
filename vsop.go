@@ -10,6 +10,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/soniakeys/unit"
 )
 
 // Mercury-Neptune planet constants suitable for first argument to LoadPlanet.
@@ -170,7 +172,7 @@ func (c *coeff) parse(ic byte, ibody int, lines []string, n int, au bool) (int, 
 //	L is heliocentric longitude in radians.
 //	B is heliocentric latitude in radians.
 //	R is heliocentric range in AU.
-func (vt *V87Planet) Position2000(jde float64) (L, B, R float64) {
+func (vt *V87Planet) Position2000(jde float64) (L, B unit.Angle, R float64) {
 	T := J2000Century(jde)
 	τ := T * .1
 	cf := make([]float64, 6)
@@ -185,46 +187,8 @@ func (vt *V87Planet) Position2000(jde float64) (L, B, R float64) {
 		}
 		return Horner(τ, cf[:len(series)]...)
 	}
-	L = PMod(sum(vt.l), 2*math.Pi)
-	B = sum(vt.b)
+	L = unit.Angle(sum(vt.l)).Mod1()
+	B = unit.Angle(sum(vt.b))
 	R = sum(vt.r)
 	return
 }
-
-/*
-// Position returns ecliptic position of planets at equinox and ecliptic of date.
-//
-// Argument jde is the date for which positions are desired.
-//
-// Results are positions consistent with those from Meeus's Apendix III,
-// that is, at equinox and ecliptic of date.
-//
-//  L is heliocentric longitude in radians.
-//  B is heliocentric latitude in radians.
-//  R is heliocentric range in AU.
-func (vt *V87Planet) Position(jde float64) (L, B, R float64) {
-	L, B, R = vt.Position2000(jde)
-	eclFrom := &coord.Ecliptic{
-		Lat: B,
-		Lon: L,
-	}
-	eclTo := &coord.Ecliptic{}
-	epochFrom := 2000.0
-	epochTo := base.JDEToJulianYear(jde)
-	precess.EclipticPosition(eclFrom, eclTo, epochFrom, epochTo, 0, 0)
-	return eclTo.Lon, eclTo.Lat, R
-}
-
-// ToFK5 converts ecliptic longitude and latitude from dynamical frame to FK5.
-func ToFK5(L, B, jde float64) (L5, B5 float64) {
-	// formula 32.3, p. 219.
-	T := base.J2000Century(jde)
-	Lp := L - 1.397*math.Pi/180*T - .00031*math.Pi/180*T*T
-	sLp, cLp := math.Sincos(Lp)
-	// (32.3) p. 219
-	L5 = L + -.09033/3600*math.Pi/180 +
-		.03916/3600*math.Pi/180*(cLp+sLp)*math.Tan(B)
-	B5 = B + .03916/3600*math.Pi/180*(cLp-sLp)
-	return
-}
-*/

@@ -9,6 +9,7 @@ import (
 	"github.com/soniakeys/astro"
 	"github.com/soniakeys/coord"
 	"github.com/soniakeys/sexagesimal"
+	"github.com/soniakeys/unit"
 )
 
 func ExampleAeiHv() {
@@ -20,7 +21,7 @@ func ExampleAeiHv() {
 		a, e, i, ok := astro.AeiHv(p, v, math.Sqrt(p.Square()), &hv)
 		fmt.Printf("a: %.5f AU\n", a)
 		fmt.Printf("e: %.5f\n", e)
-		fmt.Printf("i: %.5f deg\n", i)
+		fmt.Printf("i: %.5f deg\n", i.Deg())
 		fmt.Printf("hv: {X:%.2f Y:%.2f Z:%.2f}\n", hv.X, hv.Y, hv.Z)
 		fmt.Println("ok:", ok)
 	}
@@ -59,8 +60,8 @@ func ExampleHMag() {
 
 func ExampleLst() {
 	mjd := 46895.
-	fmt.Println(sexa.NewFmtHourAngle(astro.Lst(mjd, 0)))
-	fmt.Println(sexa.NewFmtHourAngle(astro.Lst(mjd, .01)))
+	fmt.Println(sexa.FmtTime(astro.Lst(mjd, 0)))
+	fmt.Println(sexa.FmtTime(astro.Lst(mjd, unit.AngleFromDeg(3.6))))
 	// Output:
 	// 13ʰ10ᵐ46ˢ
 	// 13ʰ25ᵐ10ˢ
@@ -84,8 +85,8 @@ func ExampleSe2000() {
 
 func ExamplePMod() {
 	fmt.Println(math.Mod(-1, 3))
-	fmt.Println(astro.PMod(-1, 3))
-	fmt.Println(astro.PMod(-1, -3))
+	fmt.Println(unit.PMod(-1, 3))
+	fmt.Println(unit.PMod(-1, -3))
 	// Output:
 	// -1
 	// 2

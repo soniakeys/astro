@@ -7,6 +7,7 @@ import (
 	"math"
 
 	"github.com/soniakeys/coord"
+	"github.com/soniakeys/unit"
 )
 
 const (
@@ -55,10 +56,10 @@ func J2000Century(jde float64) float64 {
 // Returns keplerian a, e, and i, the momentum vector (through an argument),
 // and ok=true for valid results.
 //
-// Keplerian a returned in AU, i returned in degrees.
+// Keplerian a returned in AU.
 //
 // ok=false means other return values are invalid
-func AeiHv(p, v *coord.Cart, d float64, hv *coord.Cart) (a, e, i float64, ok bool) {
+func AeiHv(p, v *coord.Cart, d float64, hv *coord.Cart) (a, e float64, i unit.Angle, ok bool) {
 
 	// momentum vector
 	hv.Cross(p, v)
@@ -93,7 +94,7 @@ func AeiHv(p, v *coord.Cart, d float64, hv *coord.Cart) (a, e, i float64, ok boo
 	// combination of stability tests on a and e (above) should
 	// ensure that hm is well above zero.
 	if !iZero {
-		i = math.Acos(hv.Z/hm) * 180 / math.Pi
+		i = unit.Angle(math.Acos(hv.Z / hm))
 	}
 	return a, e, i, true
 }
@@ -119,21 +120,12 @@ func HMag(oov, sov *coord.Cart, vmag, ood, sod float64) float64 {
 
 // Lst computes (approximate) local sidereal time.
 //
-// Argument mjd is modified Julian day, long is longitude in circles.
-//
-//  Returns local sidereal time in radians where 1 day = 2π radians.
-func Lst(mjd, long float64) float64 {
+// Argument mjd is modified Julian day.
+func Lst(mjd float64, long unit.Angle) unit.Time {
 	t := (mjd - 15019.5) / 36525
-	th := (6.6460656 + (2400.051262+0.00002581*t)*t) / 24
-	_, ut := math.Modf(mjd)
-	if ut < 0 {
-		ut++
-	}
-	_, s := math.Modf(th + ut + long)
-	if s < 0 {
-		s++
-	}
-	return s * 2 * math.Pi
+	th := (6.6460656 + (2400.051262+0.00002581*t)*t)
+	return (unit.TimeFromDay(mjd) +
+		unit.TimeFromHour(th) + long.Time()).Mod1()
 }
 
 // Se2000 computes solar ephemeris, J2000.
@@ -184,22 +176,9 @@ func Horner(x float64, c ...float64) float64 {
 	y := c[i]
 	for i > 0 {
 		i--
-		y = y*x + c[i] // sorry, no fused multiply-add in Go
+		y = y*x + c[i]
 	}
 	return y
-}
-
-// PMod returns a positive floating-point x mod y.
-//
-// For a positive argument y, it returns a value in the range [0,y).
-//
-// The function is not useful for negative values of y.
-func PMod(x, y float64) float64 {
-	r := math.Mod(x, y)
-	if r < 0 {
-		r += y
-	}
-	return r
 }
 
 // FloorDiv returns the integer floor of the fractional value (x / y).

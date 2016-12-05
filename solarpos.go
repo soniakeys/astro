@@ -6,6 +6,8 @@ package astro
 
 import (
 	"math"
+
+	"github.com/soniakeys/unit"
 )
 
 // PositionJ2000 returns rectangular coordinates referenced to equinox J2000.
@@ -19,12 +21,12 @@ func SolarPositionJ2000(e *V87Planet, jde float64) (x, y, z, r float64) {
 }
 
 func xyzr(e *V87Planet, jde float64) (x, y, z, r float64) {
-	var l, b float64
+	var l, b unit.Angle
 	l, b, r = e.Position2000(jde)
 	s := l + math.Pi
 	β := -b
-	ss, cs := math.Sincos(s)
-	sβ, cβ := math.Sincos(β)
+	ss, cs := s.Sincos()
+	sβ, cβ := β.Sincos()
 	// (26.2) p. 172
 	x = r * cβ * cs
 	y = r * cβ * ss
