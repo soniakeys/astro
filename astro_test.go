@@ -68,7 +68,7 @@ func ExampleLst() {
 }
 
 // ExampleLst output in rough agreement with Meeus, 2nd ed p 88,
-// or implementation github.com/soniakeys/meeus/sidereal.Mean().
+// or implementation github.com/soniakeys/meeus/v3/sidereal.Mean().
 
 func ExampleSe2000() {
 	mjd := 56891.9

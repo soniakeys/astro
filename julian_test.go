@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/soniakeys/astro"
-	"github.com/soniakeys/meeus/julian"
+	"github.com/soniakeys/meeus/v3/julian"
 )
 
 func ExampleMeeusCalendarGregorianToJD() {
